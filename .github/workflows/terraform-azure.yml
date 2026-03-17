@@ -7,12 +7,12 @@ on:
 #    paths:
 #      - 'Terraform/**'
 #      - '.github/workflows/terraform-azure.yml'
-#  pull_request:
-#    branches:
-#      - main
-#    paths:
-#      - 'Terraform/**'
-#      - '.github/workflows/terraform-azure.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'Terraform/**'
+      - '.github/workflows/terraform-azure.yml'
   workflow_dispatch:
 
 env:
