@@ -1,0 +1,83 @@
+name: Terraform Azure Provisioning
+
+on:
+#  push:
+#    branches:
+#      - main
+#    paths:
+#      - 'Terraform/**'
+#      - '.github/workflows/terraform-azure.yml'
+#  pull_request:
+#    branches:
+#      - main
+#    paths:
+#      - 'Terraform/**'
+#      - '.github/workflows/terraform-azure.yml'
+  workflow_dispatch:
+
+env:
+  TERRAFORM_VERSION: 1.14.0
+  AZURE_REGION: "Sweden Central"
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./Terraform
+        shell: bash
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{ secrets.AZURE_RESOURCE_GROUP_NAME }}" \
+            -backend-config="storage_account_name=${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" \
+            -backend-config="container_name=${{ secrets.AZURE_STORAGE_CONTAINER_NAME }}" \
+            -backend-config="key=${{ secrets.AZURE_STATE_FILE_KEY }}" \
+            -backend-config="access_key=${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}"
+#        env:
+#          ARM_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -out=tfplan
+        continue-on-error: true
+
+      - name: Comment PR with Plan
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const planOutput = '${{ steps.plan.outputs.stdout }}';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## Terraform Plan\n\`\`\`\n${planOutput}\n\`\`\``
+            });
+        continue-on-error: true
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan
+
+      - name: Terraform Output
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform output
