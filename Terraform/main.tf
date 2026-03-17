@@ -19,6 +19,17 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "main" {
+  name     = "gh-actions"
+  location = var.azure_region
+
+  tags = {
+    provisioned_by = "locally"
+    environment    = "testing"
+  }
+}
+
+
+resource "azurerm_resource_group" "new" {
   name     = "rg-from-gh-actions"
   location = var.azure_region
 
@@ -28,16 +39,6 @@ resource "azurerm_resource_group" "main" {
   }
 }
 
-
-resource "azurerm_resource_group" "new" {
-  name     = "gh-actions"
-  location = var.azure_region
-
-  tags = {
-    provisioned_by = "github-actions"
-    environment    = "testing"
-  }
-}
-
+# Pull request
 # Pull request
 # Pull request
