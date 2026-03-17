@@ -38,3 +38,5 @@ resource "azurerm_resource_group" "new" {
     environment    = "testing"
   }
 }
+
+# Pull request
