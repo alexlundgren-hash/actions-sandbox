@@ -1,12 +1,12 @@
 name: Terraform Azure Provisioning
 
 on:
-#  push:
-#    branches:
-#      - main
-#    paths:
-#      - 'Terraform/**'
-#      - '.github/workflows/terraform-azure.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'Terraform/**'
+      - '.github/workflows/terraform-azure.yml'
   pull_request:
     branches:
       - main
@@ -23,6 +23,10 @@ permissions:
 env:
   TERRAFORM_VERSION: 1.14.0
   AZURE_REGION: "Sweden Central"
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_USE_OIDC: true
 
 jobs:
   terraform:
@@ -61,8 +65,6 @@ jobs:
             -backend-config="container_name=${{ secrets.AZURE_STORAGE_CONTAINER_NAME }}" \
             -backend-config="key=${{ secrets.AZURE_STATE_FILE_KEY }}" \
             -backend-config="access_key=${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}"
-#        env:
-#          ARM_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
 
       - name: Terraform Validate
         run: terraform validate
@@ -70,11 +72,6 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan -out=tfplan -no-color
-        env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_USE_OIDC: true
         continue-on-error: true
 
       - name: Comment PR with Plan
