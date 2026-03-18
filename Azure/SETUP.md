@@ -1,4 +1,8 @@
+Run on your local machine:
+
 ```bash
-source az-storage-account.sh
-source account-key.sh
+source env.cfg
+./az-storage-account.sh
+source az-storage-key.sh
+./federated-credential.sh
 ```

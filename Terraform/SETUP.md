@@ -1,12 +1,17 @@
 # Terraform Azure Setup Guide
 
 ## Overview
-This Terraform configuration provisions an Azure resource group named `rg-from-gh-actions` using GitHub Actions. State is stored in an Azure Storage Account.
+This Terraform configuration provisions an Azure resource group named `gh-actions` using GitHub Actions. State is stored in an Azure Storage Account.
 
 ## Prerequisites
 
-### 1. Azure Storage Account for State
-Scripts in `../Azure`
+### 1. Remote backend in Azure
+Set up the necessary resources for storing the Terraform statefile in Azure.  
+Scripts in `../Azure` 
+
+## Running in Actions
+
+To run Terraform in GitHub Actions:
 
 ### 2. GitHub Secrets
 Add the following secrets to your GitHub repository (Settings → Secrets and Variables → Actions):

@@ -1,9 +1,5 @@
 #!/bin/bash
 
-export RESOURCE_GROUP_NAME=tfstate
-export STORAGE_ACCOUNT_NAME=tfstate$RANDOM
-export CONTAINER_NAME=tfstate
-
 # Create resource group
 az group create --name $RESOURCE_GROUP_NAME --location swedencentral
 
